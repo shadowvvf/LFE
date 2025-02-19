@@ -82,3 +82,34 @@ def convert_base(
 
     return result
 
+def gcd_lcm(a: int, b: int) -> tuple[int, int]:
+    """
+    Calculates the Greatest Common Divisor (GCD) and Least Common Multiple (LCM)
+    of two integers using the Euclidean algorithm.
+
+    Parameters:
+        a (int): First integer
+        b (int): Second integer
+
+    Returns:
+        tuple[int, int]: A tuple containing (GCD, LCM)
+
+    Raises:
+        ValueError: If either number is not a positive integer
+        ZeroDivisionError: If either number is zero
+    """
+    if not isinstance(a, int) or not isinstance(b, int):
+        raise ValueError("Both numbers must be integers")
+    if a <= 0 or b <= 0:
+        raise ValueError("Both numbers must be positive")
+    
+    def gcd(x: int, y: int) -> int:
+        while y:
+            x, y = y, x % y
+        return x
+
+    def lcm(x: int, y: int) -> int:
+        return abs(x * y) // gcd(x, y)
+
+    return gcd(a, b), lcm(a, b)
+
