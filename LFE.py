@@ -1,5 +1,8 @@
 # Place for imports
-
+import re
+import string
+import random
+import secrets
 # /Place for imports
 
 def convert_base(
@@ -112,4 +115,106 @@ def gcd_lcm(a: int, b: int) -> tuple[int, int]:
         return abs(x * y) // gcd(x, y)
 
     return gcd(a, b), lcm(a, b)
+
+def validate_email(email: str) -> tuple[bool, str]:
+    """
+    Validates an email address and returns a normalized version.
+    
+    Parameters:
+        email (str): The email address to validate
+        
+    Returns:
+        tuple[bool, str]: A tuple containing (is_valid, normalized_email)
+    """
+    pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+    
+    email = email.strip().lower()
+    
+    is_valid = bool(re.match(pattern, email))
+    
+    return is_valid, email
+
+def generate_password(
+    length: int = 16,
+    use_uppercase: bool = True,
+    use_lowercase: bool = True,
+    use_digits: bool = True,
+    use_special: bool = True
+) -> str:
+    """
+    Generates a secure random password with specified characteristics.
+    
+    Parameters:
+        length (int): Length of the password (default: 16)
+        use_uppercase (bool): Include uppercase letters (default: True)
+        use_lowercase (bool): Include lowercase letters (default: True)
+        use_digits (bool): Include digits (default: True)
+        use_special (bool): Include special characters (default: True)
+        
+    Returns:
+        str: Generated password
+        
+    Raises:
+        ValueError: If length < 4 or no character types are selected
+    """
+    if length < 4:
+        raise ValueError("Password length must be at least 4 characters")
+        
+    if not any([use_uppercase, use_lowercase, use_digits, use_special]):
+        raise ValueError("At least one character type must be selected")
+    
+    chars = ''
+    if use_uppercase:
+        chars += string.ascii_uppercase
+    if use_lowercase:
+        chars += string.ascii_lowercase
+    if use_digits:
+        chars += string.digits
+    if use_special:
+        chars += "!@#$%^&*()_+-=[]{}|;:,.<>?"
+    
+    password = []
+    if use_uppercase:
+        password.append(secrets.choice(string.ascii_uppercase))
+    if use_lowercase:
+        password.append(secrets.choice(string.ascii_lowercase))
+    if use_digits:
+        password.append(secrets.choice(string.digits))
+    if use_special:
+        password.append(secrets.choice("!@#$%^&*()_+-=[]{}|;:,.<>?"))
+        
+    while len(password) < length:
+        password.append(secrets.choice(chars))
+        
+    random.shuffle(password)
+    return ''.join(password)
+
+def levenshtein_distance(s1: str, s2: str) -> int:
+    """
+    Calculates the Levenshtein (edit) distance between two strings.
+    
+    Parameters:
+        s1 (str): First string
+        s2 (str): Second string
+        
+    Returns:
+        int: The minimum number of single-character edits needed to change s1 into s2
+    """
+    if len(s1) < len(s2):
+        return levenshtein_distance(s2, s1)
+    
+    if len(s2) == 0:
+        return len(s1)
+    
+    previous_row = range(len(s2) + 1)
+    for i, c1 in enumerate(s1):
+        current_row = [i + 1]
+        for j, c2 in enumerate(s2):
+            insertions = previous_row[j + 1] + 1
+            deletions = current_row[j] + 1
+            substitutions = previous_row[j] + (c1 != c2)
+            current_row.append(min(insertions, deletions, substitutions))
+        previous_row = current_row
+    
+    return previous_row[-1]
 
