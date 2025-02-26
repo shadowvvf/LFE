@@ -218,3 +218,88 @@ def levenshtein_distance(s1: str, s2: str) -> int:
     
     return previous_row[-1]
 
+def compress_string(text: str) -> str:
+    """
+    Compresses a string using run-length encoding.
+    
+    Parameters:
+        text (str): The string to compress
+        
+    Returns:
+        str: The compressed string
+        
+    'AABBBCCCC' -> 'A2B3C4'
+    """
+    if not text:
+        return ""
+        
+    compressed = []
+    count = 1
+    current = text[0]
+    
+    for char in text[1:]:
+        if char == current:
+            count += 1
+        else:
+            compressed.append(f"{current}{count}")
+            current = char
+            count = 1
+            
+    compressed.append(f"{current}{count}")
+    compressed_str = "".join(compressed)
+    
+    return compressed_str if len(compressed_str) < len(text) else text
+
+def is_prime(n: int) -> bool:
+    """
+    Checks if a number is prime using optimized trial division.
+    
+    Parameters:
+        n (int): The number to check
+        
+    Returns:
+        bool: True if the number is prime, False otherwise
+        
+    Raises:
+        ValueError: If the input is less than 2
+    """
+    if not isinstance(n, int):
+        raise ValueError("Input must be an integer")
+    if n < 2:
+        raise ValueError("Numbers less than 2 are not prime")
+    if n == 2:
+        return True
+    if n % 2 == 0:
+        return False
+        
+    for i in range(3, int(n ** 0.5) + 1, 2):
+        if n % i == 0:
+            return False
+    return True
+
+def generate_permutations(text: str) -> list[str]:
+    """
+    Generates all possible permutations of a string.
+    
+    Parameters:
+        text (str): The string to generate permutations for
+        
+    Returns:
+        list[str]: List of all possible permutations
+        
+    Warning:
+        The number of permutations grows factorially with string length.
+        Use with caution on long strings.
+    """
+    if len(text) <= 1:
+        return [text]
+        
+    perms = []
+    for i, char in enumerate(text):
+        # Get all permutations of string without current char
+        sub_perms = generate_permutations(text[:i] + text[i+1:])
+        # Add current char to beginning of each sub-permutation
+        perms.extend([char + p for p in sub_perms])
+        
+    return perms
+
