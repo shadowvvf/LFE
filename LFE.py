@@ -303,3 +303,59 @@ def generate_permutations(text: str) -> list[str]:
         
     return perms
 
+def calculate_statistics(numbers: list[float | int]) -> dict[str, float | int | list]:
+    """
+    Calculates basic statistical measures for a sequence of numbers.
+    
+    Parameters:
+        numbers (list[float | int]): List of numbers to analyze
+        
+    Returns:
+        dict[str, float | int | list]: Dictionary containing:
+            - mean: arithmetic mean of the numbers
+            - median: middle value of sorted numbers
+            - mode: most frequent value(s)
+            - range: difference between max and min values
+            - variance: variance of the numbers
+            - std_dev: standard deviation
+            
+    Raises:
+        ValueError: If the input list is empty
+    """
+    if not numbers:
+        raise ValueError("Input list cannot be empty")
+        
+    # Calculate mean
+    n = len(numbers)
+    mean = sum(numbers) / n
+    
+    # Calculate median
+    sorted_nums = sorted(numbers)
+    if n % 2 == 0:
+        median = (sorted_nums[n//2 - 1] + sorted_nums[n//2]) / 2
+    else:
+        median = sorted_nums[n//2]
+    
+    # Calculate mode
+    freq = {}
+    for num in numbers:
+        freq[num] = freq.get(num, 0) + 1
+    max_freq = max(freq.values())
+    mode = [num for num, count in freq.items() if count == max_freq]
+    
+    # Calculate range
+    range_val = max(numbers) - min(numbers)
+    
+    # Calculate variance and standard deviation
+    variance = sum((x - mean) ** 2 for x in numbers) / n
+    std_dev = variance ** 0.5
+    
+    return {
+        'mean': mean,
+        'median': median,
+        'mode': mode,
+        'range': range_val,
+        'variance': variance,
+        'std_dev': std_dev
+    }
+
